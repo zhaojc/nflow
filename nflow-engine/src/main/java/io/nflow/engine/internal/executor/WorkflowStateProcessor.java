@@ -56,8 +56,6 @@ class WorkflowStateProcessor implements Runnable {
   private static final PeriodicLogger threadStuckLogger = new PeriodicLogger(logger, 60);
   private static final String MDC_KEY = "workflowInstanceId";
 
-  private static final int MAX_SUBSEQUENT_STATE_EXECUTIONS = 100;
-
   private final int instanceId;
   private final WorkflowDefinitionService workflowDefinitions;
   private final WorkflowInstanceService workflowInstances;
@@ -178,8 +176,8 @@ class WorkflowStateProcessor implements Runnable {
 
   private int busyLoopPrevention(WorkflowSettings settings, int subsequentStateExecutions, StateExecutionImpl execution) {
     DateTime nextActivation = execution.getNextActivation();
-    if (subsequentStateExecutions++ >= MAX_SUBSEQUENT_STATE_EXECUTIONS && nextActivation != null) {
-      logger.warn("Executed {} times without delay, forcing short transition delay", MAX_SUBSEQUENT_STATE_EXECUTIONS);
+    if (subsequentStateExecutions++ >= settings.getMaxSubsequentStateExecutions() && nextActivation != null) {
+      logger.warn("Executed {} times without delay, forcing short transition delay", settings.getMaxSubsequentStateExecutions());
       DateTime shortTransitionActivation = settings.getShortTransitionActivation();
       if (nextActivation.isBefore(shortTransitionActivation)) {
         execution.setNextActivation(shortTransitionActivation);

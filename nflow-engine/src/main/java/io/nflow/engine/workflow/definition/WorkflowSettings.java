@@ -39,6 +39,10 @@ public class WorkflowSettings extends ModelObject {
    * Maximum retry attempts.
    */
   public final int maxRetries;
+  /**
+   * Maximum number of subsequent state executions before forcing a short transition delay.
+   */
+  public final int maxSubsequentStateExecutions;
 
   WorkflowSettings(Builder builder) {
     this.minErrorTransitionDelay = builder.minErrorTransitionDelay;
@@ -46,6 +50,7 @@ public class WorkflowSettings extends ModelObject {
     this.shortTransitionDelay = builder.shortTransitionDelay;
     this.immediateTransitionDelay = builder.immediateTransitionDelay;
     this.maxRetries = builder.maxRetries;
+    this.maxSubsequentStateExecutions = builder.maxSubsequentStateExecutions;
   }
 
   /**
@@ -58,6 +63,7 @@ public class WorkflowSettings extends ModelObject {
     int shortTransitionDelay = (int) SECONDS.toMillis(30);
     int immediateTransitionDelay = 0;
     int maxRetries = 17;
+    int maxSubsequentStateExecutions = 100;
 
     /**
      * Set the maximum delay on execution retry after an error.
@@ -120,6 +126,18 @@ public class WorkflowSettings extends ModelObject {
     }
 
     /**
+     * Set maximum number of subsequent state executions before forcing a short transition delay.
+     *
+     * @param maxSubsequentStateExecutions
+     *          Maximum number of subsequent state executions.
+     * @return this.
+     */
+    public Builder setMaxSubsequentStateExecutions(int maxSubsequentStateExecutions) {
+      this.maxSubsequentStateExecutions = maxSubsequentStateExecutions;
+      return this;
+    }
+
+    /**
      * Create workflow settings object.
      *
      * @return Workflow settings.
@@ -169,4 +187,14 @@ public class WorkflowSettings extends ModelObject {
   public DateTime getShortTransitionActivation() {
     return now().plusMillis(shortTransitionDelay);
   }
+
+  /**
+   * Return the maximum number of subsequent state executions before forcing a short transition delay.
+   *
+   * @return The maximum number of subsequent state executions.
+   */
+  public int getMaxSubsequentStateExecutions() {
+    return maxSubsequentStateExecutions;
+  }
+
 }
